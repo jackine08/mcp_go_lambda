@@ -1,0 +1,31 @@
+# Go
+*.o
+*.a
+*.so
+.DS_Store
+bootstrap
+function.zip
+
+# AWS SAM
+.aws-sam/
+sam-tests/
+build/
+dist/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local

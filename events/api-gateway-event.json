@@ -1,0 +1,9 @@
+{
+  "httpMethod": "POST",
+  "path": "/mcp",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"jsonrpc\": \"2.0\", \"method\": \"initialize\", \"params\": {}, \"id\": 1}",
+  "isBase64Encoded": false
+}

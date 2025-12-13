@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: MCP Server deployed on AWS Lambda
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: provided.al2
+
+Resources:
+  MCPServerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Architectures:
+        - x86_64
+      Events:
+        MCPApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MCPApi
+            Path: /mcp
+            Method: POST
+        RootPath:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MCPApi
+            Path: /
+            Method: GET
+
+  MCPApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Name: MCPServerApi
+
+Outputs:
+  MCPServerFunctionArn:
+    Description: ARN of the MCP Server Lambda function
+    Value: !GetAtt MCPServerFunction.Arn
+
+  MCPApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${MCPApi}.execute-api.${AWS::Region}.amazonaws.com/dev"
