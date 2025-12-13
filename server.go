@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 )
 
 // MCPRequest는 MCP 클라이언트로부터 받는 요청 구조
@@ -181,13 +182,23 @@ func (s *Server) toolAdd(args map[string]interface{}) interface{} {
 
 	if !ok1 || !ok2 {
 		return map[string]interface{}{
-			"error": "Invalid arguments: a and b must be numbers",
+			"content": []map[string]interface{}{
+				{
+					"type": "text",
+					"text": "Error: Invalid arguments - a and b must be numbers",
+				},
+			},
 		}
 	}
 
 	result := a + b
 	return map[string]interface{}{
-		"result": result,
+		"content": []map[string]interface{}{
+			{
+				"type": "text",
+				"text": fmt.Sprintf("%.0f + %.0f = %.0f", a, b, result),
+			},
+		},
 	}
 }
 
@@ -198,13 +209,23 @@ func (s *Server) toolMultiply(args map[string]interface{}) interface{} {
 
 	if !ok1 || !ok2 {
 		return map[string]interface{}{
-			"error": "Invalid arguments: a and b must be numbers",
+			"content": []map[string]interface{}{
+				{
+					"type": "text",
+					"text": "Error: Invalid arguments - a and b must be numbers",
+				},
+			},
 		}
 	}
 
 	result := a * b
 	return map[string]interface{}{
-		"result": result,
+		"content": []map[string]interface{}{
+			{
+				"type": "text",
+				"text": fmt.Sprintf("%.0f × %.0f = %.0f", a, b, result),
+			},
+		},
 	}
 }
 
