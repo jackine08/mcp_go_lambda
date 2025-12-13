@@ -24,7 +24,7 @@ deps: venv
 
 # 빌드
 build:
-	GOOS=linux GOARCH=amd64 go build -o bootstrap main.go
+	GOOS=linux GOARCH=amd64 go build -o bootstrap main.go server.go
 	zip function.zip bootstrap
 
 # 로컬 테스트

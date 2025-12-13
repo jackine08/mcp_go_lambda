@@ -1,0 +1,10 @@
+{
+  "httpMethod": "POST",
+  "path": "/mcp",
+  "headers": {
+    "Content-Type": "application/json",
+    "Host": "example.com"
+  },
+  "body": "{\"jsonrpc\": \"2.0\", \"method\": \"tools/list\", \"params\": {}, \"id\": 3}",
+  "isBase64Encoded": false
+}
