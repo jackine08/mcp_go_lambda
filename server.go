@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 )
 
 // MCPRequest는 MCP 클라이언트로부터 받는 요청 구조
@@ -25,6 +26,13 @@ type MCPError struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
+}
+
+// Tool은 MCP Tool 정의
+type Tool struct {
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	InputSchema interface{} `json:"inputSchema"`
 }
 
 // Server는 MCP 서버 구조체
@@ -51,6 +59,8 @@ func (s *Server) Handle(ctx context.Context, request MCPRequest) MCPResponse {
 		response.Result = s.handleResourcesList(ctx, request.Params)
 	case "tools/list":
 		response.Result = s.handleToolsList(ctx, request.Params)
+	case "tools/call":
+		response.Result = s.handleToolCall(ctx, request.Params)
 	case "prompts/list":
 		response.Result = s.handlePromptsList(ctx, request.Params)
 	default:
@@ -80,7 +90,7 @@ func (s *Server) handleInitialize(ctx context.Context, params interface{}) inter
 		},
 		"serverInfo": map[string]interface{}{
 			"name":    "Go MCP Server",
-			"version": "0.1.0",
+			"version": "0.2.0",
 		},
 	}
 }
@@ -94,8 +104,107 @@ func (s *Server) handleResourcesList(ctx context.Context, params interface{}) in
 
 // handleToolsList는 tools/list 메서드를 처리합니다
 func (s *Server) handleToolsList(ctx context.Context, params interface{}) interface{} {
+	tools := []Tool{
+		{
+			Name:        "add",
+			Description: "두 개의 숫자를 더합니다",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"a": map[string]interface{}{
+						"type":        "number",
+						"description": "첫 번째 숫자",
+					},
+					"b": map[string]interface{}{
+						"type":        "number",
+						"description": "두 번째 숫자",
+					},
+				},
+				"required": []string{"a", "b"},
+			},
+		},
+		{
+			Name:        "multiply",
+			Description: "두 개의 숫자를 곱합니다",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"a": map[string]interface{}{
+						"type":        "number",
+						"description": "첫 번째 숫자",
+					},
+					"b": map[string]interface{}{
+						"type":        "number",
+						"description": "두 번째 숫자",
+					},
+				},
+				"required": []string{"a", "b"},
+			},
+		},
+	}
+
 	return map[string]interface{}{
-		"tools": []interface{}{},
+		"tools": tools,
+	}
+}
+
+// ToolCallParams는 tool call 요청 파라미터
+type ToolCallParams struct {
+	Name      string                 `json:"name"`
+	Arguments map[string]interface{} `json:"arguments"`
+}
+
+// handleToolCall은 tools/call 메서드를 처리합니다
+func (s *Server) handleToolCall(ctx context.Context, params interface{}) interface{} {
+	var toolParams ToolCallParams
+
+	// params를 JSON으로 변환했다가 다시 파싱
+	paramsJSON, _ := json.Marshal(params)
+	json.Unmarshal(paramsJSON, &toolParams)
+
+	switch toolParams.Name {
+	case "add":
+		return s.toolAdd(toolParams.Arguments)
+	case "multiply":
+		return s.toolMultiply(toolParams.Arguments)
+	default:
+		return map[string]interface{}{
+			"error": "Unknown tool: " + toolParams.Name,
+		}
+	}
+}
+
+// toolAdd는 두 숫자를 더합니다
+func (s *Server) toolAdd(args map[string]interface{}) interface{} {
+	a, ok1 := args["a"].(float64)
+	b, ok2 := args["b"].(float64)
+
+	if !ok1 || !ok2 {
+		return map[string]interface{}{
+			"error": "Invalid arguments: a and b must be numbers",
+		}
+	}
+
+	result := a + b
+	return map[string]interface{}{
+		"result": result,
+	}
+}
+
+// toolMultiply는 두 숫자를 곱합니다
+func (s *Server) toolMultiply(args map[string]interface{}) interface{} {
+	a, ok1 := args["a"].(float64)
+	b, ok2 := args["b"].(float64)
+
+	if !ok1 || !ok2 {
+		return map[string]interface{}{
+			"error": "Invalid arguments: a and b must be numbers",
+		}
+	}
+
+	result := a * b
+	return map[string]interface{}{
+		"result": result,
 	}
 }
 

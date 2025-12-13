@@ -31,13 +31,13 @@ func TestHandleInitialize(t *testing.T) {
 	}
 }
 
-func TestHandleResourcesList(t *testing.T) {
+func TestHandleToolsList(t *testing.T) {
 	server := NewServer()
 	ctx := context.Background()
 
 	request := MCPRequest{
 		JsonRPC: "2.0",
-		Method:  "resources/list",
+		Method:  "tools/list",
 		Params:  map[string]interface{}{},
 		ID:      2,
 	}
@@ -53,15 +53,75 @@ func TestHandleResourcesList(t *testing.T) {
 	}
 }
 
-func TestHandleToolsList(t *testing.T) {
+func TestHandleToolCallAdd(t *testing.T) {
+	server := NewServer()
+	ctx := context.Background()
+
+	params := map[string]interface{}{
+		"name": "add",
+		"arguments": map[string]interface{}{
+			"a": 5.0,
+			"b": 3.0,
+		},
+	}
+
+	request := MCPRequest{
+		JsonRPC: "2.0",
+		Method:  "tools/call",
+		Params:  params,
+		ID:      3,
+	}
+
+	response := server.Handle(ctx, request)
+
+	if response.Error != nil {
+		t.Errorf("Expected no error, got: %v", response.Error)
+	}
+
+	if response.Result == nil {
+		t.Errorf("Expected result, got nil")
+	}
+}
+
+func TestHandleToolCallMultiply(t *testing.T) {
+	server := NewServer()
+	ctx := context.Background()
+
+	params := map[string]interface{}{
+		"name": "multiply",
+		"arguments": map[string]interface{}{
+			"a": 4.0,
+			"b": 6.0,
+		},
+	}
+
+	request := MCPRequest{
+		JsonRPC: "2.0",
+		Method:  "tools/call",
+		Params:  params,
+		ID:      4,
+	}
+
+	response := server.Handle(ctx, request)
+
+	if response.Error != nil {
+		t.Errorf("Expected no error, got: %v", response.Error)
+	}
+
+	if response.Result == nil {
+		t.Errorf("Expected result, got nil")
+	}
+}
+
+func TestHandleResourcesList(t *testing.T) {
 	server := NewServer()
 	ctx := context.Background()
 
 	request := MCPRequest{
 		JsonRPC: "2.0",
-		Method:  "tools/list",
+		Method:  "resources/list",
 		Params:  map[string]interface{}{},
-		ID:      3,
+		ID:      5,
 	}
 
 	response := server.Handle(ctx, request)
@@ -83,7 +143,7 @@ func TestHandleMethodNotFound(t *testing.T) {
 		JsonRPC: "2.0",
 		Method:  "unknown_method",
 		Params:  map[string]interface{}{},
-		ID:      4,
+		ID:      6,
 	}
 
 	response := server.Handle(ctx, request)
