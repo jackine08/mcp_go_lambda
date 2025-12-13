@@ -35,7 +35,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "mcp-server-${Environment}"
-      CodeUri: .
+      CodeUri: function.zip
       Handler: bootstrap
       Architectures:
         - x86_64
@@ -66,13 +66,6 @@ Resources:
     Properties:
       Name: !Sub "mcp-server-api-${Environment}"
       StageName: !Ref Environment
-      TracingEnabled: true
-      MethodSettings:
-        - ResourcePath: '/*'
-          HttpMethod: '*'
-          LoggingLevel: INFO
-          DataTraceEnabled: true
-          MetricsEnabled: true
 
   # CloudWatch 로그 그룹
   MCPServerLogGroup:

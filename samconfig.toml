@@ -1,0 +1,12 @@
+version = 0.1
+
+[default.build]
+codeuri = "./"
+docker_network = "host"
+
+[default.deploy]
+region = "ap-northeast-2"
+confirm_changeset = false
+parameter_overrides = "Environment=dev"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-flfx6fj5vixw"
+s3_prefix = "mcp-server"
