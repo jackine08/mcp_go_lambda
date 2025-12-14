@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"context"
@@ -6,7 +6,9 @@ import (
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
+
+	"github.com/jackine08/mcp_go_lambda/internal/mcp"
+	"github.com/jackine08/mcp_go_lambda/internal/types"
 )
 
 // HandleAPIGatewayRequest는 API Gateway 요청을 처리하는 Lambda 핸들러
@@ -14,7 +16,7 @@ func HandleAPIGatewayRequest(ctx context.Context, request events.APIGatewayProxy
 	log.Printf("Received request: %s %s", request.HTTPMethod, request.Path)
 
 	// 서버 생성
-	server := NewServer()
+	server := mcp.NewServer()
 
 	// 요청이 빈 경우 (GET /)
 	if request.Body == "" {
@@ -29,13 +31,13 @@ func HandleAPIGatewayRequest(ctx context.Context, request events.APIGatewayProxy
 	}
 
 	// MCP 요청 파싱
-	var mcpRequest MCPRequest
+	var mcpRequest types.MCPRequest
 	err := json.Unmarshal([]byte(request.Body), &mcpRequest)
 	if err != nil {
 		log.Printf("Failed to parse request: %v", err)
-		errResponse := MCPResponse{
+		errResponse := types.MCPResponse{
 			JsonRPC: "2.0",
-			Error: &MCPError{
+			Error: &types.MCPError{
 				Code:    -32700,
 				Message: "Parse error",
 				Data:    err.Error(),
@@ -63,8 +65,4 @@ func HandleAPIGatewayRequest(ctx context.Context, request events.APIGatewayProxy
 			"Content-Type": "application/json",
 		},
 	}, nil
-}
-
-func main() {
-	lambda.Start(HandleAPIGatewayRequest)
 }

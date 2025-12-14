@@ -1,40 +1,12 @@
-package main
+package mcp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/jackine08/mcp_go_lambda/internal/types"
 )
-
-// MCPRequest는 MCP 클라이언트로부터 받는 요청 구조
-type MCPRequest struct {
-	JsonRPC string      `json:"jsonrpc"`
-	Method  string      `json:"method"`
-	Params  interface{} `json:"params"`
-	ID      interface{} `json:"id"`
-}
-
-// MCPResponse는 MCP 서버에서 응답하는 구조
-type MCPResponse struct {
-	JsonRPC string      `json:"jsonrpc"`
-	Result  interface{} `json:"result,omitempty"`
-	Error   *MCPError   `json:"error,omitempty"`
-	ID      interface{} `json:"id,omitempty"`
-}
-
-// MCPError는 MCP 에러 응답
-type MCPError struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-}
-
-// Tool은 MCP Tool 정의
-type Tool struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	InputSchema interface{} `json:"inputSchema"`
-}
 
 // Server는 MCP 서버 구조체
 type Server struct {
@@ -47,8 +19,8 @@ func NewServer() *Server {
 }
 
 // Handle은 MCP 요청을 처리합니다
-func (s *Server) Handle(ctx context.Context, request MCPRequest) MCPResponse {
-	response := MCPResponse{
+func (s *Server) Handle(ctx context.Context, request types.MCPRequest) types.MCPResponse {
+	response := types.MCPResponse{
 		JsonRPC: "2.0",
 		ID:      request.ID,
 	}
@@ -65,7 +37,7 @@ func (s *Server) Handle(ctx context.Context, request MCPRequest) MCPResponse {
 	case "prompts/list":
 		response.Result = s.handlePromptsList(ctx, request.Params)
 	default:
-		response.Error = &MCPError{
+		response.Error = &types.MCPError{
 			Code:    -32601,
 			Message: "Method not found",
 		}
@@ -105,7 +77,7 @@ func (s *Server) handleResourcesList(ctx context.Context, params interface{}) in
 
 // handleToolsList는 tools/list 메서드를 처리합니다
 func (s *Server) handleToolsList(ctx context.Context, params interface{}) interface{} {
-	tools := []Tool{
+	tools := []types.Tool{
 		{
 			Name:        "add",
 			Description: "두 개의 숫자를 더합니다",
