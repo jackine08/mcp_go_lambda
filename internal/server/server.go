@@ -12,17 +12,10 @@ func NewMCPServer() *mcp.Server {
 		Version: "v2.0.0", // Updated for 7 tools (Calculator + StringTools)
 	}, nil)
 
-	// Create tool manager and register all providers
-	toolManager := tools.NewToolManager()
-
-	// Register tool providers - 새로운 provider를 여기에 추가하면 자동으로 등록됨
-	toolManager.
-		Register(tools.NewCalculator()).
-		Register(tools.NewStringTools())
-		// .Register(새로운Provider()) // 여기에 추가하면 자동 등록!
-
-	// Register all tools from all providers
-	toolManager.RegisterAll(server)
+	// All tools are automatically registered via init() functions in tool packages
+	// 새로운 tool을 추가하려면 internal/tools/ 아래에 파일만 생성하고
+	// init() 함수에서 Register() 호출하면 자동 등록됨
+	tools.RegisterAllTools(server)
 
 	return server
 }

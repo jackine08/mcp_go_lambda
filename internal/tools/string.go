@@ -8,31 +8,13 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StringInput defines input for string operations
-type StringInput struct {
+// TextInput defines input for string operations
+type TextInput struct {
 	Text string `json:"text" jsonschema:"the input text"`
 }
 
-// ReverseInput defines input for reverse operation
-type ReverseInput struct {
-	Text string `json:"text" jsonschema:"the text to reverse"`
-}
-
-// CaseInput defines input for case conversion
-type CaseInput struct {
-	Text string `json:"text" jsonschema:"the text to convert"`
-}
-
-// StringTools provides string manipulation operations
-type StringTools struct{}
-
-// NewStringTools creates a new StringTools instance
-func NewStringTools() *StringTools {
-	return &StringTools{}
-}
-
 // ToUpper converts text to uppercase
-func (s *StringTools) ToUpper(ctx context.Context, req *mcp.CallToolRequest, input CaseInput) (
+func ToUpper(ctx context.Context, req *mcp.CallToolRequest, input TextInput) (
 	*mcp.CallToolResult,
 	map[string]interface{},
 	error,
@@ -48,7 +30,7 @@ func (s *StringTools) ToUpper(ctx context.Context, req *mcp.CallToolRequest, inp
 }
 
 // ToLower converts text to lowercase
-func (s *StringTools) ToLower(ctx context.Context, req *mcp.CallToolRequest, input CaseInput) (
+func ToLower(ctx context.Context, req *mcp.CallToolRequest, input TextInput) (
 	*mcp.CallToolResult,
 	map[string]interface{},
 	error,
@@ -64,7 +46,7 @@ func (s *StringTools) ToLower(ctx context.Context, req *mcp.CallToolRequest, inp
 }
 
 // Reverse reverses a string
-func (s *StringTools) Reverse(ctx context.Context, req *mcp.CallToolRequest, input ReverseInput) (
+func Reverse(ctx context.Context, req *mcp.CallToolRequest, input TextInput) (
 	*mcp.CallToolResult,
 	map[string]interface{},
 	error,
@@ -83,20 +65,26 @@ func (s *StringTools) Reverse(ctx context.Context, req *mcp.CallToolRequest, inp
 	}, map[string]interface{}{"result": result}, nil
 }
 
-// RegisterTools registers all string tools (implements ToolProvider interface)
-func (s *StringTools) RegisterTools(server *mcp.Server) {
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "to_upper",
-		Description: "텍스트를 대문자로 변환합니다",
-	}, s.ToUpper)
+// init automatically registers all string tools
+func init() {
+	Register("to_upper", "텍스트를 대문자로 변환합니다", func(server *mcp.Server) {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "to_upper",
+			Description: "텍스트를 대문자로 변환합니다",
+		}, ToUpper)
+	})
 
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "to_lower",
-		Description: "텍스트를 소문자로 변환합니다",
-	}, s.ToLower)
+	Register("to_lower", "텍스트를 소문자로 변환합니다", func(server *mcp.Server) {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "to_lower",
+			Description: "텍스트를 소문자로 변환합니다",
+		}, ToLower)
+	})
 
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "reverse",
-		Description: "텍스트를 역순으로 뒤집습니다",
-	}, s.Reverse)
+	Register("reverse", "텍스트를 역순으로 뒤집습니다", func(server *mcp.Server) {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "reverse",
+			Description: "텍스트를 역순으로 뒤집습니다",
+		}, Reverse)
+	})
 }

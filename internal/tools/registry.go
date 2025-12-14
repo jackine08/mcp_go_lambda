@@ -4,33 +4,30 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// ToolProvider는 MCP tool을 제공하는 인터페이스
-type ToolProvider interface {
-	// RegisterTools는 이 provider의 모든 tool을 서버에 등록
-	RegisterTools(server *mcp.Server)
+// Tool represents a registered MCP tool with a registration function
+type Tool struct {
+	Name        string
+	Description string
+	RegisterFn  func(*mcp.Server) // Function that knows how to register this specific tool
 }
 
-// ToolManager는 여러 tool provider를 관리하고 자동으로 등록
-type ToolManager struct {
-	providers []ToolProvider
+// Global registry - tools register themselves via init()
+var registry []Tool
+
+// Register adds a tool to the global registry
+// Called automatically from init() functions in tool files
+// The registerFn should call mcp.AddTool with the correct types
+func Register(name, description string, registerFn func(*mcp.Server)) {
+	registry = append(registry, Tool{
+		Name:        name,
+		Description: description,
+		RegisterFn:  registerFn,
+	})
 }
 
-// NewToolManager는 새로운 ToolManager를 생성
-func NewToolManager() *ToolManager {
-	return &ToolManager{
-		providers: make([]ToolProvider, 0),
-	}
-}
-
-// Register는 tool provider를 등록 (체이닝 가능)
-func (tm *ToolManager) Register(provider ToolProvider) *ToolManager {
-	tm.providers = append(tm.providers, provider)
-	return tm
-}
-
-// RegisterAll은 등록된 모든 provider의 tool을 MCP 서버에 등록
-func (tm *ToolManager) RegisterAll(server *mcp.Server) {
-	for _, provider := range tm.providers {
-		provider.RegisterTools(server)
+// RegisterAllTools registers all tools from the global registry to the MCP server
+func RegisterAllTools(server *mcp.Server) {
+	for _, tool := range registry {
+		tool.RegisterFn(server)
 	}
 }

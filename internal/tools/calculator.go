@@ -13,16 +13,8 @@ type OperationInput struct {
 	B float64 `json:"b" jsonschema:"the second number"`
 }
 
-// Calculator provides calculator operations as MCP tools
-type Calculator struct{}
-
-// NewCalculator creates a new Calculator instance
-func NewCalculator() *Calculator {
-	return &Calculator{}
-}
-
 // Add adds two numbers
-func (c *Calculator) Add(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
+func Add(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
 	*mcp.CallToolResult,
 	map[string]interface{},
 	error,
@@ -38,7 +30,7 @@ func (c *Calculator) Add(ctx context.Context, req *mcp.CallToolRequest, input Op
 }
 
 // Multiply multiplies two numbers
-func (c *Calculator) Multiply(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
+func Multiply(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
 	*mcp.CallToolResult,
 	map[string]interface{},
 	error,
@@ -54,7 +46,7 @@ func (c *Calculator) Multiply(ctx context.Context, req *mcp.CallToolRequest, inp
 }
 
 // Subtract subtracts two numbers
-func (c *Calculator) Subtract(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
+func Subtract(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
 	*mcp.CallToolResult,
 	map[string]interface{},
 	error,
@@ -70,7 +62,7 @@ func (c *Calculator) Subtract(ctx context.Context, req *mcp.CallToolRequest, inp
 }
 
 // Divide divides two numbers
-func (c *Calculator) Divide(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
+func Divide(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
 	*mcp.CallToolResult,
 	map[string]interface{},
 	error,
@@ -95,25 +87,33 @@ func (c *Calculator) Divide(ctx context.Context, req *mcp.CallToolRequest, input
 	}, map[string]interface{}{"result": result}, nil
 }
 
-// RegisterTools registers all calculator tools (implements ToolProvider interface)
-func (c *Calculator) RegisterTools(server *mcp.Server) {
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "add",
-		Description: "두 개의 숫자를 더합니다",
-	}, c.Add)
+// init automatically registers all calculator tools
+func init() {
+	Register("add", "두 개의 숫자를 더합니다", func(server *mcp.Server) {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "add",
+			Description: "두 개의 숫자를 더합니다",
+		}, Add)
+	})
 
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "multiply",
-		Description: "두 개의 숫자를 곱합니다",
-	}, c.Multiply)
+	Register("multiply", "두 개의 숫자를 곱합니다", func(server *mcp.Server) {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "multiply",
+			Description: "두 개의 숫자를 곱합니다",
+		}, Multiply)
+	})
 
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "subtract",
-		Description: "두 개의 숫자를 뺍니다",
-	}, c.Subtract)
+	Register("subtract", "두 개의 숫자를 뺍니다", func(server *mcp.Server) {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "subtract",
+			Description: "두 개의 숫자를 뺍니다",
+		}, Subtract)
+	})
 
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "divide",
-		Description: "두 개의 숫자를 나눕니다",
-	}, c.Divide)
+	Register("divide", "두 개의 숫자를 나눕니다", func(server *mcp.Server) {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "divide",
+			Description: "두 개의 숫자를 나눕니다",
+		}, Divide)
+	})
 }
