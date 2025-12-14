@@ -48,6 +48,37 @@ mcp-go-lambda/
 - **cmd/lambda**: Lambda 함수의 엔트리포인트
 - **internal/handler**: API Gateway 요청을 처리하는 Lambda 핸들러
 - **internal/mcp**: MCP 프로토콜 서버 구현
+
+## ✨ VS Code/GitHub Copilot 연동
+
+이 MCP 서버는 **VS Code의 GitHub Copilot**에서 바로 사용할 수 있습니다!
+
+### 빠른 시작
+
+1. **VS Code에서 mcp.json 생성** (`~/.vscode/mcp.json` 또는 `.vscode/mcp.json`):
+
+```json
+{
+  "servers": {
+    "mcp-go-lambda": {
+      "type": "http",
+      "url": "https://yhj0gi980j.execute-api.ap-northeast-2.amazonaws.com/dev/mcp",
+      "headers": {
+        "Authorization": "Bearer test-token",
+        "MCP-Protocol-Version": "2025-06-18"
+      }
+    }
+  }
+}
+```
+
+2. **VS Code에서 사용**:
+   - `Ctrl+Alt+I`로 Chat View 열기
+   - Tools 버튼 클릭
+   - `add`, `multiply` 도구 선택
+   - "15와 27을 더해줘" 같은 프롬프트 입력
+
+자세한 내용은 [VS Code 설정 가이드](docs/VSCODE_SETUP.md)를 참고하세요.
 - **internal/types**: 공통 타입 정의 (Request, Response, Error 등)
 
 ### MCP 기능
@@ -117,8 +148,20 @@ go test -cover ./...
 
 배포 후 API Gateway 엔드포인트:
 ```
-https://<api-id>.execute-api.<region>.amazonaws.com/dev/mcp
+POST https://<api-id>.execute-api.<region>.amazonaws.com/dev/mcp
+GET  https://<api-id>.execute-api.<region>.amazonaws.com/dev/mcp
+GET  https://<api-id>.execute-api.<region>.amazonaws.com/dev/.well-known/oauth-protected-resource
 ```
+
+### HTTP Transport 기능 (2025-06-18)
+
+- **Streamable HTTP Transport**: POST/GET 메서드 지원
+- **OAuth 2.1 인증**: Bearer Token 기반 (선택적)
+- **세션 관리**: Mcp-Session-Id 헤더
+- **프로토콜 버전**: MCP-Protocol-Version 헤더 지원
+- **API Gateway Stage 자동 처리**: /dev/mcp → /mcp 정규화
+
+자세한 내용은 [HTTP Transport Guide](docs/HTTP_TRANSPORT_GUIDE.md) 참고
 
 ### 사용 예시
 

@@ -1,0 +1,20 @@
+{
+  "httpMethod": "POST",
+  "path": "/dev/mcp",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer test-token",
+    "MCP-Protocol-Version": "2025-06-18",
+    "Mcp-Session-Id": "abc123def456",
+    "Host": "abc123.execute-api.ap-northeast-2.amazonaws.com"
+  },
+  "body": "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}",
+  "requestContext": {
+    "stage": "dev",
+    "requestId": "test-request-id-2",
+    "identity": {
+      "sourceIp": "127.0.0.1"
+    }
+  },
+  "isBase64Encoded": false
+}

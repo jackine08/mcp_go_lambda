@@ -1,0 +1,16 @@
+{
+  "httpMethod": "GET",
+  "path": "/dev/.well-known/oauth-protected-resource",
+  "headers": {
+    "Host": "abc123.execute-api.ap-northeast-2.amazonaws.com"
+  },
+  "body": "",
+  "requestContext": {
+    "stage": "dev",
+    "requestId": "test-request-id-3",
+    "identity": {
+      "sourceIp": "127.0.0.1"
+    }
+  },
+  "isBase64Encoded": false
+}

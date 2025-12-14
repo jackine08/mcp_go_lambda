@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "path": "/dev/mcp",
+  "headers": {
+    "Host": "abc123.execute-api.ap-northeast-2.amazonaws.com",
+    "MCP-Protocol-Version": "2025-06-18"
+  },
+  "body": "",
+  "requestContext": {
+    "stage": "dev",
+    "requestId": "test-request-id-4",
+    "identity": {
+      "sourceIp": "127.0.0.1"
+    }
+  },
+  "isBase64Encoded": false
+}

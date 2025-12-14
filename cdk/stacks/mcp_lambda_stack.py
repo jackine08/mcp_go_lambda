@@ -57,14 +57,47 @@ class MCPLambdaStack(Stack):
             ),
         )
 
+        # CORS 설정
+        cors_config = apigw.CorsOptions(
+            allow_origins=["*"],  # 프로덕션에서는 특정 도메인으로 제한
+            allow_methods=["GET", "POST", "OPTIONS"],
+            allow_headers=[
+                "Content-Type",
+                "Authorization",
+                "MCP-Protocol-Version",
+                "Mcp-Session-Id",
+            ],
+            expose_headers=[
+                "MCP-Protocol-Version",
+                "Mcp-Session-Id",
+                "WWW-Authenticate",
+            ],
+        )
+
         # /mcp 리소스
-        mcp_resource = api.root.add_resource("mcp")
+        mcp_resource = api.root.add_resource(
+            "mcp",
+            default_cors_preflight_options=cors_config,
+        )
+
+        # Lambda 통합 설정
+        lambda_integration = apigw.LambdaIntegration(lambda_fn)
+
+        # GET /mcp 메서드 (SSE 스트림 지원용)
+        mcp_resource.add_method("GET", lambda_integration)
 
         # POST /mcp 메서드
-        mcp_resource.add_method(
-            "POST",
-            apigw.LambdaIntegration(lambda_fn),
+        mcp_resource.add_method("POST", lambda_integration)
+
+        # /.well-known/oauth-protected-resource 리소스
+        well_known = api.root.add_resource(".well-known")
+        oauth_resource = well_known.add_resource(
+            "oauth-protected-resource",
+            default_cors_preflight_options=cors_config,
         )
+        
+        # GET /.well-known/oauth-protected-resource
+        oauth_resource.add_method("GET", lambda_integration)
 
         # ==================
         # CloudWatch 대시보드
