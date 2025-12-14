@@ -12,7 +12,11 @@
       "*/__pycache__",
       "**/.pytest_cache",
       "**/.venv",
-      ".git"
+      ".git",
+      "cdk.out",
+      ".venv",
+      "node_modules",
+      ".samcli"
     ]
   },
   "context": {

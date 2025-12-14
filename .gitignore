@@ -15,9 +15,22 @@ dist/
 # Python
 .venv/
 venv/
+cdk/venv/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# AWS CDK
+cdk/venv/
+cdk.out/
+cdk.context.json
+*.cdk.json.bak
+
+# Terraform (향후 사용 가능)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
 *.egg-info/
 
 # IDE

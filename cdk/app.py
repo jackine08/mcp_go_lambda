@@ -13,7 +13,7 @@ MCPLambdaStack(
     app,
     "mcp-server-stack",
     env=cdk.Environment(
-        account="YOUR_ACCOUNT_ID",  # AWS 계정 ID로 변경 필요
+        account="374146078851",
         region="ap-northeast-2",
     ),
 )

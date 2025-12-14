@@ -8,16 +8,19 @@ from aws_cdk import (
     aws_logs as logs,
     aws_iam as iam,
     aws_cloudwatch as cloudwatch,
-    core,
+    Stack,
     Duration,
+    RemovalPolicy,
+    CfnOutput,
 )
+from constructs import Construct
 import os
 
 
-class MCPLambdaStack(core.Stack):
+class MCPLambdaStack(Stack):
     """MCP 서버 Lambda Stack"""
 
-    def __init__(self, scope: core.Construct, id: str, **kwargs):
+    def __init__(self, scope: Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
         # ==================
@@ -26,10 +29,10 @@ class MCPLambdaStack(core.Stack):
         lambda_fn = lambda_.Function(
             self,
             "MCPServerFunction",
-            runtime=lambda_.Runtime.GO_1_X,
+            runtime=lambda_.Runtime.PROVIDED_AL2023,
             handler="bootstrap",
             code=lambda_.Code.from_asset(
-                os.path.join(os.path.dirname(__file__), "..", "..")
+                os.path.join(os.path.dirname(__file__), "..", "..", "lambda_dist")
             ),
             timeout=Duration.seconds(30),
             memory_size=256,
@@ -37,17 +40,6 @@ class MCPLambdaStack(core.Stack):
                 "ENVIRONMENT": "dev",
             },
             description="MCP Server Lambda Function",
-        )
-
-        # ==================
-        # CloudWatch 로그 그룹
-        # ==================
-        log_group = logs.LogGroup(
-            self,
-            "MCPServerLogGroup",
-            log_group_name=f"/aws/lambda/{lambda_fn.function_name}",
-            retention=logs.RetentionDays.ONE_WEEK,
-            removal_policy=core.RemovalPolicy.DESTROY,
         )
 
         # ==================
@@ -88,7 +80,7 @@ class MCPLambdaStack(core.Stack):
             cloudwatch.GraphWidget(
                 title="Lambda Invocations",
                 left=[
-                    lambda_.Function.metric_invocations(
+                    lambda_fn.metric_invocations(
                         statistic="Sum",
                     ),
                 ],
@@ -96,7 +88,7 @@ class MCPLambdaStack(core.Stack):
             cloudwatch.GraphWidget(
                 title="Lambda Duration",
                 left=[
-                    lambda_.Function.metric_duration(
+                    lambda_fn.metric_duration(
                         statistic="Average",
                     ),
                 ],
@@ -104,7 +96,7 @@ class MCPLambdaStack(core.Stack):
             cloudwatch.GraphWidget(
                 title="Lambda Errors",
                 left=[
-                    lambda_.Function.metric_errors(
+                    lambda_fn.metric_errors(
                         statistic="Sum",
                     ),
                 ],
@@ -117,7 +109,7 @@ class MCPLambdaStack(core.Stack):
         error_alarm = cloudwatch.Alarm(
             self,
             "MCPServerErrorAlarm",
-            metric=lambda_.Function.metric_errors(statistic="Sum"),
+            metric=lambda_fn.metric_errors(statistic="Sum"),
             threshold=1,
             evaluation_periods=1,
             alarm_description="Alert when Lambda function has errors",
@@ -127,7 +119,7 @@ class MCPLambdaStack(core.Stack):
         # ==================
         # Outputs
         # ==================
-        core.CfnOutput(
+        CfnOutput(
             self,
             "APIEndpoint",
             value=api.url_for_path("/mcp"),
@@ -135,7 +127,7 @@ class MCPLambdaStack(core.Stack):
             export_name="MCPApiEndpoint",
         )
 
-        core.CfnOutput(
+        CfnOutput(
             self,
             "LambdaFunctionArn",
             value=lambda_fn.function_arn,
@@ -143,10 +135,10 @@ class MCPLambdaStack(core.Stack):
             export_name="MCPLambdaFunctionArn",
         )
 
-        core.CfnOutput(
+        CfnOutput(
             self,
-            "LogGroupName",
-            value=log_group.log_group_name,
-            description="CloudWatch Log Group Name",
-            export_name="MCPLogGroupName",
+            "LambdaFunctionName",
+            value=lambda_fn.function_name,
+            description="Lambda Function Name",
+            export_name="MCPLambdaFunctionName",
         )
