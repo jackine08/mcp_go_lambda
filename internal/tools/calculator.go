@@ -89,31 +89,8 @@ func Divide(ctx context.Context, req *mcp.CallToolRequest, input OperationInput)
 
 // init automatically registers all calculator tools
 func init() {
-	Register("add", "두 개의 숫자를 더합니다", func(server *mcp.Server) {
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "add",
-			Description: "두 개의 숫자를 더합니다",
-		}, Add)
-	})
-
-	Register("multiply", "두 개의 숫자를 곱합니다", func(server *mcp.Server) {
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "multiply",
-			Description: "두 개의 숫자를 곱합니다",
-		}, Multiply)
-	})
-
-	Register("subtract", "두 개의 숫자를 뺍니다", func(server *mcp.Server) {
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "subtract",
-			Description: "두 개의 숫자를 뺍니다",
-		}, Subtract)
-	})
-
-	Register("divide", "두 개의 숫자를 나눕니다", func(server *mcp.Server) {
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "divide",
-			Description: "두 개의 숫자를 나눕니다",
-		}, Divide)
-	})
+	Register("add", "두 개의 숫자를 더합니다", Add)
+	Register("multiply", "두 개의 숫자를 곱합니다", Multiply)
+	Register("subtract", "두 개의 숫자를 뺍니다", Subtract)
+	Register("divide", "두 개의 숫자를 나눕니다", Divide)
 }

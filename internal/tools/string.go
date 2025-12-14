@@ -67,24 +67,7 @@ func Reverse(ctx context.Context, req *mcp.CallToolRequest, input TextInput) (
 
 // init automatically registers all string tools
 func init() {
-	Register("to_upper", "텍스트를 대문자로 변환합니다", func(server *mcp.Server) {
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "to_upper",
-			Description: "텍스트를 대문자로 변환합니다",
-		}, ToUpper)
-	})
-
-	Register("to_lower", "텍스트를 소문자로 변환합니다", func(server *mcp.Server) {
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "to_lower",
-			Description: "텍스트를 소문자로 변환합니다",
-		}, ToLower)
-	})
-
-	Register("reverse", "텍스트를 역순으로 뒤집습니다", func(server *mcp.Server) {
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "reverse",
-			Description: "텍스트를 역순으로 뒤집습니다",
-		}, Reverse)
-	})
+	Register("to_upper", "텍스트를 대문자로 변환합니다", ToUpper)
+	Register("to_lower", "텍스트를 소문자로 변환합니다", ToLower)
+	Register("reverse", "텍스트를 역순으로 뒤집습니다", Reverse)
 }

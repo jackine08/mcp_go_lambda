@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"context"
+
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -16,12 +18,17 @@ var registry []Tool
 
 // Register adds a tool to the global registry
 // Called automatically from init() functions in tool files
-// The registerFn should call mcp.AddTool with the correct types
-func Register(name, description string, registerFn func(*mcp.Server)) {
+// The handler function is automatically wrapped and registered with proper types
+func Register[In any](name, description string, handler func(context.Context, *mcp.CallToolRequest, In) (*mcp.CallToolResult, map[string]interface{}, error)) {
 	registry = append(registry, Tool{
 		Name:        name,
 		Description: description,
-		RegisterFn:  registerFn,
+		RegisterFn: func(server *mcp.Server) {
+			mcp.AddTool(server, &mcp.Tool{
+				Name:        name,
+				Description: description,
+			}, handler)
+		},
 	})
 }
 
