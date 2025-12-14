@@ -70,8 +70,29 @@ func (s *Server) handleInitialize(ctx context.Context, params interface{}) inter
 
 // handleResourcesList는 resources/list 메서드를 처리합니다
 func (s *Server) handleResourcesList(ctx context.Context, params interface{}) interface{} {
+	resources := []map[string]interface{}{
+		{
+			"uri":         "file:///project/README.md",
+			"name":        "프로젝트 README",
+			"description": "프로젝트 설명 문서",
+			"mimeType":    "text/markdown",
+		},
+		{
+			"uri":         "https://api.example.com/status",
+			"name":        "API 상태",
+			"description": "서버 상태 확인 엔드포인트",
+			"mimeType":    "application/json",
+		},
+		{
+			"uri":         "file:///logs/app.log",
+			"name":        "애플리케이션 로그",
+			"description": "최근 애플리케이션 로그 파일",
+			"mimeType":    "text/plain",
+		},
+	}
+
 	return map[string]interface{}{
-		"resources": []interface{}{},
+		"resources": resources,
 	}
 }
 
@@ -203,7 +224,53 @@ func (s *Server) toolMultiply(args map[string]interface{}) interface{} {
 
 // handlePromptsList는 prompts/list 메서드를 처리합니다
 func (s *Server) handlePromptsList(ctx context.Context, params interface{}) interface{} {
+	prompts := []map[string]interface{}{
+		{
+			"name":        "code-review",
+			"description": "코드 리뷰를 위한 프롬프트",
+			"arguments": []map[string]interface{}{
+				{
+					"name":        "language",
+					"description": "프로그래밍 언어",
+					"required":    true,
+				},
+				{
+					"name":        "code",
+					"description": "리뷰할 코드",
+					"required":    true,
+				},
+			},
+		},
+		{
+			"name":        "bug-analysis",
+			"description": "버그 분석 프롬프트",
+			"arguments": []map[string]interface{}{
+				{
+					"name":        "error_message",
+					"description": "에러 메시지",
+					"required":    true,
+				},
+				{
+					"name":        "context",
+					"description": "에러 발생 컨텍스트",
+					"required":    false,
+				},
+			},
+		},
+		{
+			"name":        "documentation",
+			"description": "문서 생성 프롬프트",
+			"arguments": []map[string]interface{}{
+				{
+					"name":        "function_name",
+					"description": "문서화할 함수명",
+					"required":    true,
+				},
+			},
+		},
+	}
+
 	return map[string]interface{}{
-		"prompts": []interface{}{},
+		"prompts": prompts,
 	}
 }
