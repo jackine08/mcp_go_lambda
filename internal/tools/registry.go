@@ -2,9 +2,27 @@ package tools
 
 import (
 	"context"
+	"log/slog"
+	"os"
+	"sync"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
+
+var (
+	logger     *slog.Logger
+	loggerOnce sync.Once
+)
+
+// getLogger returns the logger instance, initializing it if necessary
+func getLogger() *slog.Logger {
+	loggerOnce.Do(func() {
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		}))
+	})
+	return logger
+}
 
 // Tool represents a registered MCP tool with a registration function
 type Tool struct {
@@ -20,6 +38,12 @@ var registry []Tool
 // Called automatically from init() functions in tool files
 // The handler function is automatically wrapped and registered with proper types
 func Register[In any](name, description string, handler func(context.Context, *mcp.CallToolRequest, In) (*mcp.CallToolResult, map[string]interface{}, error)) {
+	log := getLogger()
+	log.Debug("Registering tool",
+		"name", name,
+		"description", description,
+	)
+
 	registry = append(registry, Tool{
 		Name:        name,
 		Description: description,
@@ -34,7 +58,17 @@ func Register[In any](name, description string, handler func(context.Context, *m
 
 // RegisterAllTools registers all tools from the global registry to the MCP server
 func RegisterAllTools(server *mcp.Server) {
+	log := getLogger()
+	log.Info("Registering all tools to MCP server",
+		"toolCount", len(registry),
+	)
+
 	for _, tool := range registry {
+		log.Debug("Registering tool to server", "toolName", tool.Name)
 		tool.RegisterFn(server)
 	}
+
+	log.Info("All tools registered successfully",
+		"totalTools", len(registry),
+	)
 }
