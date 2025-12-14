@@ -7,33 +7,24 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// AddInput defines the input parameters for the add tool
-type AddInput struct {
+// OperationInput defines the common input for calculator operations
+type OperationInput struct {
 	A float64 `json:"a" jsonschema:"the first number"`
 	B float64 `json:"b" jsonschema:"the second number"`
 }
 
-// MultiplyInput defines the input parameters for the multiply tool
-type MultiplyInput struct {
-	A float64 `json:"a" jsonschema:"the first number"`
-	B float64 `json:"b" jsonschema:"the second number"`
+// Calculator provides calculator operations as MCP tools
+type Calculator struct{}
+
+// NewCalculator creates a new Calculator instance
+func NewCalculator() *Calculator {
+	return &Calculator{}
 }
 
-// SubtractInput defines the input parameters for the subtract tool
-type SubtractInput struct {
-	A float64 `json:"a" jsonschema:"the first number"`
-	B float64 `json:"b" jsonschema:"the second number"`
-}
-
-// ResultOutput defines the output structure for calculation results
-type ResultOutput struct {
-	Result float64 `json:"result" jsonschema:"the calculation result"`
-}
-
-// AddTool implements the add operation
-func AddTool(ctx context.Context, req *mcp.CallToolRequest, input AddInput) (
+// Add adds two numbers
+func (c *Calculator) Add(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
 	*mcp.CallToolResult,
-	ResultOutput,
+	map[string]interface{},
 	error,
 ) {
 	result := input.A + input.B
@@ -43,13 +34,13 @@ func AddTool(ctx context.Context, req *mcp.CallToolRequest, input AddInput) (
 				Text: fmt.Sprintf("%f + %f = %f", input.A, input.B, result),
 			},
 		},
-	}, ResultOutput{Result: result}, nil
+	}, map[string]interface{}{"result": result}, nil
 }
 
-// MultiplyTool implements the multiply operation
-func MultiplyTool(ctx context.Context, req *mcp.CallToolRequest, input MultiplyInput) (
+// Multiply multiplies two numbers
+func (c *Calculator) Multiply(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
 	*mcp.CallToolResult,
-	ResultOutput,
+	map[string]interface{},
 	error,
 ) {
 	result := input.A * input.B
@@ -59,13 +50,13 @@ func MultiplyTool(ctx context.Context, req *mcp.CallToolRequest, input MultiplyI
 				Text: fmt.Sprintf("%f × %f = %f", input.A, input.B, result),
 			},
 		},
-	}, ResultOutput{Result: result}, nil
+	}, map[string]interface{}{"result": result}, nil
 }
 
-// SubtractTool implements the subtract operation
-func SubtractTool(ctx context.Context, req *mcp.CallToolRequest, input SubtractInput) (
+// Subtract subtracts two numbers
+func (c *Calculator) Subtract(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
 	*mcp.CallToolResult,
-	ResultOutput,
+	map[string]interface{},
 	error,
 ) {
 	result := input.A - input.B
@@ -75,23 +66,54 @@ func SubtractTool(ctx context.Context, req *mcp.CallToolRequest, input SubtractI
 				Text: fmt.Sprintf("%f - %f = %f", input.A, input.B, result),
 			},
 		},
-	}, ResultOutput{Result: result}, nil
+	}, map[string]interface{}{"result": result}, nil
 }
 
-// RegisterCalculatorTools registers all calculator tools with the MCP server
-func RegisterCalculatorTools(server *mcp.Server) {
+// Divide divides two numbers
+func (c *Calculator) Divide(ctx context.Context, req *mcp.CallToolRequest, input OperationInput) (
+	*mcp.CallToolResult,
+	map[string]interface{},
+	error,
+) {
+	if input.B == 0 {
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{
+					Text: "Error: division by zero",
+				},
+			},
+			IsError: true,
+		}, nil, fmt.Errorf("division by zero")
+	}
+	result := input.A / input.B
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			&mcp.TextContent{
+				Text: fmt.Sprintf("%f ÷ %f = %f", input.A, input.B, result),
+			},
+		},
+	}, map[string]interface{}{"result": result}, nil
+}
+
+// RegisterTools registers all calculator tools (implements ToolProvider interface)
+func (c *Calculator) RegisterTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "add",
 		Description: "두 개의 숫자를 더합니다",
-	}, AddTool)
+	}, c.Add)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "multiply",
 		Description: "두 개의 숫자를 곱합니다",
-	}, MultiplyTool)
+	}, c.Multiply)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "subtract",
 		Description: "두 개의 숫자를 뺍니다",
-	}, SubtractTool)
+	}, c.Subtract)
+
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "divide",
+		Description: "두 개의 숫자를 나눕니다",
+	}, c.Divide)
 }
