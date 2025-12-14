@@ -41,6 +41,23 @@ func HandleLambdaRequest(ctx context.Context, server *mcp.Server, request events
 
 	// Handle MCP methods
 	switch method {
+	case "initialize":
+		// Return server capabilities
+		response = map[string]interface{}{
+			"jsonrpc": "2.0",
+			"id":      jsonRPCRequest["id"],
+			"result": map[string]interface{}{
+				"protocolVersion": "2024-11-05",
+				"capabilities": map[string]interface{}{
+					"tools": map[string]interface{}{},
+				},
+				"serverInfo": map[string]interface{}{
+					"name":    "mcp-go-lambda",
+					"version": "v1.0.0",
+				},
+			},
+		}
+
 	case "tools/list":
 		result, err := clientSession.ListTools(ctx, nil)
 		if err != nil {
