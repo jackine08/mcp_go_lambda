@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2 // indirect
 	github.com/google/jsonschema-go v0.3.0 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
