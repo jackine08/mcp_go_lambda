@@ -87,7 +87,15 @@ func Help(ctx context.Context, req *mcp.CallToolRequest, input HelpInput) (
 			response.WriteString("\n")
 		}
 
-		response.WriteString(fmt.Sprintf("\n총 %d개의 도구를 사용할 수 있습니다.\n", len(registry)-1)) // -1 to exclude help itself
+		// Count tools excluding help itself
+		toolCount := 0
+		for _, tool := range registry {
+			if tool.Name != "help" {
+				toolCount++
+			}
+		}
+		
+		response.WriteString(fmt.Sprintf("\n총 %d개의 도구를 사용할 수 있습니다.\n", toolCount))
 		response.WriteString("\n특정 도구에 대한 자세한 정보를 보려면 tool_name 파라미터를 지정하세요.")
 	}
 
