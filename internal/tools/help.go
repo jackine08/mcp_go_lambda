@@ -11,7 +11,7 @@ import (
 // HelpInput defines input for the help tool
 type HelpInput struct {
 	// Optional: if provided, shows details for specific tool
-	ToolName string `json:"tool_name,omitempty" jsonschema:"optional: specific tool name to get details about"`
+	ToolName string `json:"tool_name,omitempty" jsonschema:"Optional: Specific tool name to get details about."`
 }
 
 // Help provides information about what this MCP server can do
@@ -94,7 +94,7 @@ func Help(ctx context.Context, req *mcp.CallToolRequest, input HelpInput) (
 				toolCount++
 			}
 		}
-		
+
 		response.WriteString(fmt.Sprintf("\n총 %d개의 도구를 사용할 수 있습니다.\n", toolCount))
 		response.WriteString("\n특정 도구에 대한 자세한 정보를 보려면 tool_name 파라미터를 지정하세요.")
 	}
