@@ -21,7 +21,7 @@ func NewMCPServer() *mcp.Server {
 
 	mcpServer := mcp.NewServer(&mcp.Implementation{
 		Name:    "mcp-go-lambda",
-		Version: "v2.0.0", // Updated for 7 tools (Calculator + StringTools)
+		Version: "v2.1.0", // Updated for 8 tools (Calculator + String + Greeting)
 	}, nil)
 
 	// All tools are automatically registered via init() functions in tool packages

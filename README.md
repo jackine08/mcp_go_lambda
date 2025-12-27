@@ -47,6 +47,9 @@ mcp-go-lambda/
 
 ## 🛠️ 구현된 Tools
 
+### 인사 (Greeting)
+- **say_hello**: 인사를 건넵니다. 한국어(ko) 또는 영어(en)로 인사할 수 있습니다
+
 ### 계산기 (Calculator)
 - **add**: 두 개의 숫자를 더합니다
 - **multiply**: 두 개의 숫자를 곱합니다
@@ -224,12 +227,28 @@ curl -X POST "https://yhj0gi980j.execute-api.ap-northeast-2.amazonaws.com/dev/mc
     }
   }'
 
-# 문자열 뒤집기 예시
+# 인사 예시 (ㅎㅇ에 대한 응답)
 curl -X POST "https://yhj0gi980j.execute-api.ap-northeast-2.amazonaws.com/dev/mcp" \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
     "id": 4,
+    "method": "tools/call",
+    "params": {
+      "name": "say_hello",
+      "arguments": {
+        "name": "친구",
+        "language": "ko"
+      }
+    }
+  }'
+
+# 문자열 뒤집기 예시
+curl -X POST "https://yhj0gi980j.execute-api.ap-northeast-2.amazonaws.com/dev/mcp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 5,
     "method": "tools/call",
     "params": {
       "name": "reverse",
